@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - LOG_LEVEL=INFO
+      - MODEL_PATH=app/models/emotion_cnn.pth
+      - MODEL_DEVICE=cpu
+      - ENABLE_HISTORY=True
+    volumes:
+      - ./app/models:/app/app/models:ro
+      - ./app:/app/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - emotionsense
+
+networks:
+  emotionsense:
+    driver: bridge
